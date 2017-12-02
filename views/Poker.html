@@ -1,0 +1,27 @@
+<html>
+    <title>
+        Poker
+    </title>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/Poker.css">
+    </head>
+    
+    <body>
+        <div id="numofplayers" style="display: none">
+            <form>
+                Human Players: <input type="text" id="humanplayers"><br>
+                AI Players: <input type="text" id="aiplayers"><br>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+        <div id= "gameoptions" style="display: none">
+            <button id="join-game">Join Game</button>
+            <label>Spots Available: <span id= "slot-count"></span></label>
+        </div>
+
+        <script src="scripts/jquery-2.1.4.min.js" type= "text/javascript"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="scripts/client.js" type="text/javascript"></script>
+
+    </body>
+</html>
