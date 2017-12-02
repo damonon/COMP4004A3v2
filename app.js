@@ -5,14 +5,20 @@ var path = require('path');
 
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var port = process.env.PORT || 3000;
 
+var allClients = [];
 var numPlayers = [];
+var MAX_PLAYERS = 3;
 console.log(numPlayers.length);
 var count = 1;
+
 //Middleware
 app.use(express.static(path.join(__dirname, "/public")));
 
-server.listen(3000)
+server.listen(port,()=>{
+    console.log('Server listening at port %d', port)
+})
 
 //Routes
 app.get("/", function(req, res) {
@@ -21,14 +27,30 @@ app.get("/", function(req, res) {
 
 
 io.on('connection', function(socket){
-    if(numPlayers.length === 0){
+    
+    console.log(allClients.length)
+    if(allClients.length === 0){
         console.log('iuejgr')
-        numPlayers.push(count)
+        allClients.push(socket)
         socket.emit('firstConnection')
     }
-    else {
+    else if(allClients.length <= MAX_PLAYERS){
         console.log('yghujlk')
-        numPlayers.push(count++)
+        allClients.push(socket)
         socket.emit('xConnection')
     }
+    else{
+        socket.emit('fullGame')
+    }
+
+    socket.on('getPlayers',(data)=>{
+        console.log(data.humanPlayers);
+        console.log(data.aiPlayers)
+    })
+    socket.on('disconnect', ()=>{
+        console.log('Client disconnect!')
+        var i = allClients.indexOf(socket)
+        allClients.splice(i,1)
+    })
+
 })
