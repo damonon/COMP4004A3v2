@@ -1,7 +1,6 @@
 var socket = io()
 
 socket.on('firstConnection', () => {
-    console.log('gehiurogjk')
     $("#numofplayers").show()
     $("#joinGame").click((event) =>{
         event.preventDefault();

@@ -7,7 +7,9 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
-var Player = require(__dirname + "/common/Player")
+var Player = require("./common/Player")
+var Card = require("./common/Card")
+var Deck  = require("./common/Deck")
 
 var allClients = [];
 var availableSlots = [4,3,2,1];
@@ -16,6 +18,11 @@ var MAX_PLAYERS = 3;
 var numAIPlayers = 0;
 var numHumPlayers = 0;
 var count = 1;
+
+var deck = new Deck()
+var shuffledDeck = deck.shuffleDeck()
+console.log(shuffledDeck)
+
 
 //Middleware
 app.use(express.static(path.join(__dirname, "/public")));
