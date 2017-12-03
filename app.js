@@ -7,7 +7,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
-var Player = require(__dirname + "/public/common/Player")
+var Player = require(__dirname + "/common/Player")
 
 var allClients = [];
 var availableSlots = [4,3,2,1];
@@ -35,13 +35,16 @@ io.on('connection', function(socket){
     //console.log(allClients.length)
     if(allClients.length === 0){
         var newPlayerID = availableSlots.pop()
-
+        var human = new Player(newPlayerID, "Player " + newPlayerID, "none")
+        console.log(human)
         allClients.push(socket)
         socket.emit('firstConnection')
     }
     else if(availableSlots.length != 0){
         allClients.push(socket)
         var newPlayerID = availableSlots.pop()
+        var human = new Player(newPlayerID, "Player " + newPlayerID, "none")
+        console.log(human)
         socket.emit('xConnection')
     }
     else if(availableSlots.length === 0){
@@ -50,14 +53,36 @@ io.on('connection', function(socket){
 
     socket.on('getPlayers',(data)=>{
         numHumPlayers = data.humanPlayers
-        numAIPlayers = data.aiPlayers
+        numAIPlayers = parseInt(data.aiPlayers)
         console.log(numHumPlayers);
         console.log(numAIPlayers)
         
-        if(numAIPlayers != 0){
-            for(var i = 0; i < numAIPlayers; i++){
-                addAI()
-            }
+        if(numAIPlayers === 1){
+            var newPlayerID = availableSlots.pop()
+            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat)
+            console.log(ai)
+        }
+        else if(numAIPlayers === 2){
+            var newPlayerID = availableSlots.pop()
+            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat)
+            console.log(ai)
+
+            var newPlayerID2 = availableSlots.pop()
+            var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat)
+            console.log(ai2)
+        }
+        else if (numAIPlayers ===3){
+            var newPlayerID = availableSlots.pop()
+            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat)
+            console.log(ai)
+
+            var newPlayerID2 = availableSlots.pop()
+            var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat)
+            console.log(ai2)
+
+            var newPlayerID3 = availableSlots.pop()
+            var ai3 = new Player(newPlayerID3, "AI " + newPlayerID3, data.ai3strat)
+            console.log(ai3)
         }
     })
 
@@ -72,5 +97,6 @@ io.on('connection', function(socket){
 function addAI(){
     console.log("adding AI")
     var newPlayerID = availableSlots.pop()
+    var ai = new Player(newPLayerID, "AI " + newPlayerID)
     
 }
