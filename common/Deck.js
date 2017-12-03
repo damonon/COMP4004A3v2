@@ -37,10 +37,8 @@ class Deck{
         return this.deck
     }
 
-    pop() {return this.deck.pop();}
-    push(card){
-        this.deck.push(card);
-    }
+    pop() {return this.deck.pop()}
+    push(card){this.deck.push(card)}
 }
 
 module.exports = Deck;
