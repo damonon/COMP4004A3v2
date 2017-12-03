@@ -7,10 +7,14 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
+var Player = require(__dirname + "/public/common/Player")
+
 var allClients = [];
-var numPlayers = [];
+var availableSlots = [4,3,2,1];
+var clients = []
 var MAX_PLAYERS = 3;
-console.log(numPlayers.length);
+var numAIPlayers = 0;
+var numHumPlayers = 0;
 var count = 1;
 
 //Middleware
@@ -28,25 +32,35 @@ app.get("/", function(req, res) {
 
 io.on('connection', function(socket){
     
-    console.log(allClients.length)
+    //console.log(allClients.length)
     if(allClients.length === 0){
-        console.log('iuejgr')
+        var newPlayerID = availableSlots.pop()
+
         allClients.push(socket)
         socket.emit('firstConnection')
     }
-    else if(allClients.length <= MAX_PLAYERS){
-        console.log('yghujlk')
+    else if(availableSlots.length != 0){
         allClients.push(socket)
+        var newPlayerID = availableSlots.pop()
         socket.emit('xConnection')
     }
-    else{
+    else if(availableSlots.length === 0){
         socket.emit('fullGame')
     }
 
     socket.on('getPlayers',(data)=>{
-        console.log(data.humanPlayers);
-        console.log(data.aiPlayers)
+        numHumPlayers = data.humanPlayers
+        numAIPlayers = data.aiPlayers
+        console.log(numHumPlayers);
+        console.log(numAIPlayers)
+        
+        if(numAIPlayers != 0){
+            for(var i = 0; i < numAIPlayers; i++){
+                addAI()
+            }
+        }
     })
+
     socket.on('disconnect', ()=>{
         console.log('Client disconnect!')
         var i = allClients.indexOf(socket)
@@ -54,3 +68,9 @@ io.on('connection', function(socket){
     })
 
 })
+
+function addAI(){
+    console.log("adding AI")
+    var newPlayerID = availableSlots.pop()
+    
+}
