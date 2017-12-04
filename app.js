@@ -37,7 +37,7 @@ app.get("/", function(req, res) {
 	res.sendFile(__dirname + "/views/Poker.html");
 });
 
-
+//2 Human 1 AI and 3 Human 1 AI does not work
 io.on('connection', function(socket){
     
     //console.log(allClients.length)
@@ -51,7 +51,7 @@ io.on('connection', function(socket){
         firstClient = true
         socket.emit('firstConnection')
     }
-    else if(firstClient && (count <= totalPlayers)){
+    else if(firstClient && (count < totalPlayers)){
         allClients.push(socket)
         var newPlayerID = availableSlots.pop()
         var human = new Player(newPlayerID, "Player " + newPlayerID, "none")
@@ -59,9 +59,11 @@ io.on('connection', function(socket){
         console.log(human)
         clients.push(human)
         socket.emit('xConnection')
-
+        if(clients.length === totalPlayers){
+            io.emit('startgame')
+        }
     }
-    else if(clients.length >= totalPlayers && firstClient){
+    else if(count >= totalPlayers && firstClient){
         console.log(firstClient)
         console.log("IN HERE " + count)
         console.log("IN Herer " + totalPlayers)
@@ -76,7 +78,7 @@ io.on('connection', function(socket){
         
         if(numAIPlayers === 1){
             var newPlayerID = availableSlots.pop()
-            count = count + 2
+            count = count + 1
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat)
             clients.push(ai)
             console.log(ai)
@@ -119,7 +121,7 @@ io.on('connection', function(socket){
             var newPlayerID3 = availableSlots.pop()
             var ai3 = new Player(newPlayerID3, "AI " + newPlayerID3, data.ai3strat)
             console.log(ai3)
-            clients.push(a3)
+            clients.push(ai3)
 
             if(clients.length === totalPlayers){
                 io.emit('startgame')
