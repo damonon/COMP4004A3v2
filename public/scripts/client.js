@@ -9,6 +9,8 @@ socket.on('firstConnection', () => {
         console.log(numHum)
         var numAI = $("#aiplayers").val()
         console.log(numAI)
+        var max = parseInt(numHum) + parseInt(numAI)
+        socket.emit('getNumPlayers', max)
         $("#numofplayers").hide()
         if(numAI == 1){
             $("#ai2strat").hide()
@@ -63,4 +65,9 @@ socket.on('xConnection', () => {
 
 socket.on('fullGame', () => {
     $("#fullgame").show()
+})
+
+socket.on('startgame',()=>{
+    console.log("Display the start game board")
+    $("#startgameboard").show()
 })
