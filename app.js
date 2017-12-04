@@ -14,6 +14,7 @@ var firstClient = false
 var allClients = [];
 var availableSlots = [4,3,2,1];
 var clients = []
+var holdJson = []
 var MAX_PLAYERS = 3;
 var numAIPlayers = 0;
 var numHumPlayers = 0;
@@ -45,24 +46,29 @@ io.on('connection', function(socket){
         var newPlayerID = availableSlots.pop()
         var hand = deck.getDeck().splice(-5,5)
         var human = new Player(newPlayerID, "Player " + newPlayerID, "none", hand)
+        var test = {playerid: newPlayerID, type: "Human", cards: hand}
+        holdJson.push(test)
         count++
         console.log(human)
         allClients.push(socket)
         clients.push(human)
         firstClient = true
-        socket.emit('firstConnection')
+        socket.emit('firstConnection',{playerID: newPlayerID})
     }
     else if(firstClient && (count < totalPlayers)){
         allClients.push(socket)
         var newPlayerID = availableSlots.pop()
         var hand = deck.getDeck().splice(-5,5)
         var human = new Player(newPlayerID, "Player " + newPlayerID, "none", hand)
+        var test = {playerid: newPlayerID, type: "Human", cards: hand}
+        holdJson.push(test)
         count++
         console.log(human)
         clients.push(human)
-        socket.emit('xConnection')
+        socket.emit('xConnection', {playerID: newPlayerID})
         if(clients.length === totalPlayers){
-            io.emit('startgame')
+            //console.log(clients)
+            startGame()
         }
     }
     else if(count >= totalPlayers && firstClient){
@@ -83,12 +89,14 @@ io.on('connection', function(socket){
             var hand = deck.getDeck().splice(-5,5)
             count = count + 1
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
+            var test = {playerid: newPlayerID, type: "AI", cards: hand}
+            holdJson.push(test)
             clients.push(ai)
             console.log(ai)
             console.log(clients.length)
 
             if(clients.length === totalPlayers){
-                io.emit('startgame')
+                startGame()
             }
         }
         else if(numAIPlayers === 2){
@@ -96,17 +104,22 @@ io.on('connection', function(socket){
             count = count + 2
             var hand = deck.getDeck().splice(-5,5)
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
+            var test = {playerid: newPlayerID, type: "AI", cards: hand}
+            holdJson.push(test)
             clients.push(ai)
             console.log(ai)
+
             var hand2 = deck.getDeck().splice(-5,5)
             var newPlayerID2 = availableSlots.pop()
             var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat, hand2)
+            var test2 = {playerid: newPlayerID, type: "AI", cards: hand}
+            holdJson.push(test2)
 
             console.log(ai2)
             clients.push(ai2)
 
             if(clients.length === totalPlayers){
-                io.emit('startgame')
+                startGame()
             }
         }
         else if (numAIPlayers === 3){
@@ -114,23 +127,29 @@ io.on('connection', function(socket){
             count = count + 3
             var hand = deck.getDeck().splice(-5,5)
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
+            var test = {playerid: newPlayerID, type: "AI", cards: hand}
+            holdJson.push(test)
             console.log(ai)
             clients.push(ai)
 
             var newPlayerID2 = availableSlots.pop()
             var hand2 = deck.getDeck().splice(-5,5)
             var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat, hand2)
+            var test2 = {playerid: newPlayerID, type: "AI", cards: hand}
+            holdJson.push(test2)
             console.log(ai2)
             clients.push(ai2)
 
             var newPlayerID3 = availableSlots.pop()
             var hand3 = deck.getDeck().splice(-5,5)
             var ai3 = new Player(newPlayerID3, "AI " + newPlayerID3, data.ai3strat, hand3)
+            var test3 = {playerid: newPlayerID, type: "AI", cards: hand}
+            holdJson.push(test3)
             console.log(ai3)
             clients.push(ai3)
 
             if(clients.length === totalPlayers){
-                io.emit('startgame')
+                startGame();
             }
         }
     })
@@ -156,4 +175,13 @@ function addAI(){
     var newPlayerID = availableSlots.pop()
     var ai = new Player(newPLayerID, "AI " + newPlayerID)
     
+}
+
+function startGame(){
+    console.log(holdJson)
+    //Swap order to let AI go first
+    var b = holdJson[0];
+    holdJson[0] = holdJson[1]
+    holdJson[1] = b
+    io.emit('startgame', holdJson)
 }

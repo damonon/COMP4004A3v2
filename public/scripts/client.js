@@ -1,10 +1,11 @@
 var socket = io()
-
-socket.on('firstConnection', () => {
+var localPlayer = 0
+socket.on('firstConnection', (userInfo) => {
     $("#numofplayers").show()
     $("#joinGame").click((event) =>{
         event.preventDefault();
-
+        localPlayer = userInfo
+        console.log("userInfo1 " + localPlayer.playerID)
         var numHum = $("#humanplayers").val()
         console.log(numHum)
         var numAI = $("#aiplayers").val()
@@ -55,8 +56,10 @@ socket.on('firstConnection', () => {
     //$("#gameoptions").show()
 })
 
-socket.on('xConnection', () => {
+socket.on('xConnection', (userInfo) => {
     console.log("Hello?")
+    localPlayer = userInfo
+    console.log("userInfo " + localPlayer.playerID)
     $("#gameoptions").show()
 })
 
@@ -64,8 +67,10 @@ socket.on('fullGame', () => {
     $("#fullgame").show()
 })
 
-socket.on('startgame',()=>{
+//data = {playerid, type, cards}
+socket.on('startgame',(data)=>{
     console.log("Display the start game board")
     $("#gameoptions").hide()
     $("#startgameboard").show()
+    console.log(data[0].playerid)
 })

@@ -5,7 +5,7 @@ class Player{
 		this.strategy = strategy;
 		this.hand = hand
 	}
-
+	getID(){return this.id}
 	getHand(){return this.hand}
 	getName(){return this.name}
 	getStrat(){return this.strategy}
