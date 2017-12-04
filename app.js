@@ -43,7 +43,8 @@ io.on('connection', function(socket){
     //console.log(allClients.length)
     if(!firstClient){
         var newPlayerID = availableSlots.pop()
-        var human = new Player(newPlayerID, "Player " + newPlayerID, "none")
+        var hand = deck.getDeck().splice(-5,5)
+        var human = new Player(newPlayerID, "Player " + newPlayerID, "none", hand)
         count++
         console.log(human)
         allClients.push(socket)
@@ -54,7 +55,8 @@ io.on('connection', function(socket){
     else if(firstClient && (count < totalPlayers)){
         allClients.push(socket)
         var newPlayerID = availableSlots.pop()
-        var human = new Player(newPlayerID, "Player " + newPlayerID, "none")
+        var hand = deck.getDeck().splice(-5,5)
+        var human = new Player(newPlayerID, "Player " + newPlayerID, "none", hand)
         count++
         console.log(human)
         clients.push(human)
@@ -78,8 +80,9 @@ io.on('connection', function(socket){
         
         if(numAIPlayers === 1){
             var newPlayerID = availableSlots.pop()
+            var hand = deck.getDeck().splice(-5,5)
             count = count + 1
-            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat)
+            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
             clients.push(ai)
             console.log(ai)
             console.log(clients.length)
@@ -91,13 +94,13 @@ io.on('connection', function(socket){
         else if(numAIPlayers === 2){
             var newPlayerID = availableSlots.pop()
             count = count + 2
-
-            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat)
+            var hand = deck.getDeck().splice(-5,5)
+            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
             clients.push(ai)
             console.log(ai)
-
+            var hand2 = deck.getDeck().splice(-5,5)
             var newPlayerID2 = availableSlots.pop()
-            var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat)
+            var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat, hand2)
 
             console.log(ai2)
             clients.push(ai2)
@@ -106,20 +109,23 @@ io.on('connection', function(socket){
                 io.emit('startgame')
             }
         }
-        else if (numAIPlayers ===3){
+        else if (numAIPlayers === 3){
             var newPlayerID = availableSlots.pop()
             count = count + 3
-            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat)
+            var hand = deck.getDeck().splice(-5,5)
+            var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
             console.log(ai)
             clients.push(ai)
 
             var newPlayerID2 = availableSlots.pop()
-            var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat)
+            var hand2 = deck.getDeck().splice(-5,5)
+            var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat, hand2)
             console.log(ai2)
             clients.push(ai2)
 
             var newPlayerID3 = availableSlots.pop()
-            var ai3 = new Player(newPlayerID3, "AI " + newPlayerID3, data.ai3strat)
+            var hand3 = deck.getDeck().splice(-5,5)
+            var ai3 = new Player(newPlayerID3, "AI " + newPlayerID3, data.ai3strat, hand3)
             console.log(ai3)
             clients.push(ai3)
 

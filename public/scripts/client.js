@@ -58,9 +58,6 @@ socket.on('firstConnection', () => {
 socket.on('xConnection', () => {
     console.log("Hello?")
     $("#gameoptions").show()
-    $('#joinRegular').click(()=>{
-        $("#gameoptions").hide()
-    })
 })
 
 socket.on('fullGame', () => {
@@ -69,5 +66,6 @@ socket.on('fullGame', () => {
 
 socket.on('startgame',()=>{
     console.log("Display the start game board")
+    $("#gameoptions").hide()
     $("#startgameboard").show()
 })
