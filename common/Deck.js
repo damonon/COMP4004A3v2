@@ -4,12 +4,13 @@ class Deck{
         this.deck = []
         this.values = ['a','2','3','4','5','6','7','8','9','10','j','q','k']
         this.suits = ['clubs', 'hearts', 'spades', 'diams']
+        this.number = ['1','2','3','4','5','6','7','8','9','10','11','12','13']
     }
 
     createDeck(){
         for (let i=0; i<this.suits.length; i++) {
             for(let j=0; j<this.values.length; j++) {
-              this.push(new Card(this.values[j],this.suits[i]));
+              this.push(new Card(this.values[j],this.suits[i], this.number[j]));
             }
         }
         return this.getDeck();

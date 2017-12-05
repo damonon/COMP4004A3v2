@@ -10,6 +10,8 @@ var port = process.env.PORT || 3000;
 var Player = require("./common/Player")
 var Card = require("./common/Card")
 var Deck  = require("./common/Deck")
+var Strategy1 = require("./common/Strategy1")
+
 var firstClient = false
 var allClients = [];
 var availableSlots = [4,3,2,1];
