@@ -6,8 +6,9 @@ socket.on('firstConnection', (userInfo) => {
     $("#numofplayers").show()
     $("#joinGame").click((event) =>{
         event.preventDefault();
-        localPlayer = userInfo
-        console.log("userInfo1 " + localPlayer.playerID)
+        window.name = `${userInfo.playerID}`
+        console.log(window.name)
+        console.log(userInfo)
         var numHum = $("#humanplayers").val()
         console.log(numHum)
         var numAI = $("#aiplayers").val()
@@ -59,9 +60,9 @@ socket.on('firstConnection', (userInfo) => {
 })
 
 socket.on('xConnection', (userInfo) => {
-    console.log("Hello?")
-    localPlayer = userInfo
-    console.log("userInfo " + localPlayer.playerID)
+    window.name = `${userInfo.playerID}`
+    console.log(window.name)
+    //localPlayer = userInfo
     $("#gameoptions").show()
 })
 
@@ -71,6 +72,7 @@ socket.on('fullGame', () => {
 
 //data = {playerid, type, cards}
 socket.on('startgame',(data)=>{
+    console.log(window.name)
     console.log("Display the start game board")
     $("#gameoptions").hide()
     $("#startgameboard").show()
@@ -79,8 +81,8 @@ socket.on('startgame',(data)=>{
     for(var i = 0; i < data.length; i++){
         $("#board").append("<ul id='playerHand' class= table></ul>" )
         console.log("PlayerID " + data[i].playerid)
-        console.log("Local Player ID" + localPlayer.playerid)
-        if(data[i].type != "AI"){
+        console.log("Local Player ID" + window.name)
+        if(data[i].playerid == window.name){
             displayCards(data[i].cards)
         }
         else{
