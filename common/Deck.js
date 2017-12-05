@@ -2,8 +2,8 @@ const Card = require('./Card');
 class Deck{
     constructor(){
         this.deck = []
-        this.values = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
-        this.suits = ['Clubs', 'Hearts', 'Spades', 'Diamonds']
+        this.values = ['a','2','3','4','5','6','7','8','9','10','j','q','k']
+        this.suits = ['clubs', 'hearts', 'spades', 'diams']
     }
 
     createDeck(){

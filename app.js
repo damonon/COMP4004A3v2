@@ -46,7 +46,7 @@ io.on('connection', function(socket){
         var newPlayerID = availableSlots.pop()
         var hand = deck.getDeck().splice(-5,5)
         var human = new Player(newPlayerID, "Player " + newPlayerID, "none", hand)
-        var test = {playerid: newPlayerID, type: "Human", cards: hand}
+        var test = {playerid: newPlayerID, type: "Human", cards: hand, strategy: "none"}
         holdJson.push(test)
         count++
         console.log(human)
@@ -60,7 +60,7 @@ io.on('connection', function(socket){
         var newPlayerID = availableSlots.pop()
         var hand = deck.getDeck().splice(-5,5)
         var human = new Player(newPlayerID, "Player " + newPlayerID, "none", hand)
-        var test = {playerid: newPlayerID, type: "Human", cards: hand}
+        var test = {playerid: newPlayerID, type: "Human", cards: hand, strategy: "none"}
         holdJson.push(test)
         count++
         console.log(human)
@@ -89,7 +89,7 @@ io.on('connection', function(socket){
             var hand = deck.getDeck().splice(-5,5)
             count = count + 1
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
-            var test = {playerid: newPlayerID, type: "AI", cards: hand}
+            var test = {playerid: newPlayerID, type: "AI", cards: hand, strategy:data.ai1strat}
             holdJson.push(test)
             clients.push(ai)
             console.log(ai)
@@ -104,7 +104,7 @@ io.on('connection', function(socket){
             count = count + 2
             var hand = deck.getDeck().splice(-5,5)
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
-            var test = {playerid: newPlayerID, type: "AI", cards: hand}
+            var test = {playerid: newPlayerID, type: "AI", cards: hand , strategy:data.ai1strat}
             holdJson.push(test)
             clients.push(ai)
             console.log(ai)
@@ -112,7 +112,7 @@ io.on('connection', function(socket){
             var hand2 = deck.getDeck().splice(-5,5)
             var newPlayerID2 = availableSlots.pop()
             var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat, hand2)
-            var test2 = {playerid: newPlayerID, type: "AI", cards: hand}
+            var test2 = {playerid: newPlayerID, type: "AI", cards: hand, strategy:data.ai2strat}
             holdJson.push(test2)
 
             console.log(ai2)
@@ -127,7 +127,7 @@ io.on('connection', function(socket){
             count = count + 3
             var hand = deck.getDeck().splice(-5,5)
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
-            var test = {playerid: newPlayerID, type: "AI", cards: hand}
+            var test = {playerid: newPlayerID, type: "AI", cards: hand, strategy:data.ai1strat}
             holdJson.push(test)
             console.log(ai)
             clients.push(ai)
@@ -135,7 +135,7 @@ io.on('connection', function(socket){
             var newPlayerID2 = availableSlots.pop()
             var hand2 = deck.getDeck().splice(-5,5)
             var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat, hand2)
-            var test2 = {playerid: newPlayerID, type: "AI", cards: hand}
+            var test2 = {playerid: newPlayerID, type: "AI", cards: hand, strategy:data.ai2strat}
             holdJson.push(test2)
             console.log(ai2)
             clients.push(ai2)
@@ -143,7 +143,7 @@ io.on('connection', function(socket){
             var newPlayerID3 = availableSlots.pop()
             var hand3 = deck.getDeck().splice(-5,5)
             var ai3 = new Player(newPlayerID3, "AI " + newPlayerID3, data.ai3strat, hand3)
-            var test3 = {playerid: newPlayerID, type: "AI", cards: hand}
+            var test3 = {playerid: newPlayerID, type: "AI", cards: hand, strategy:data.ai3strat}
             holdJson.push(test3)
             console.log(ai3)
             clients.push(ai3)

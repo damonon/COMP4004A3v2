@@ -1,5 +1,7 @@
 var socket = io()
-var localPlayer = 0
+var localPlayer = null
+
+//{playerid}
 socket.on('firstConnection', (userInfo) => {
     $("#numofplayers").show()
     $("#joinGame").click((event) =>{
@@ -72,5 +74,34 @@ socket.on('startgame',(data)=>{
     console.log("Display the start game board")
     $("#gameoptions").hide()
     $("#startgameboard").show()
-    console.log(data[0].playerid)
+    $("#board").append("<ul id='playerHand' class= table></ul>" )
+    //console.log(data[0].playerid)
+    for(var i = 0; i < data.length; i++){
+        $("#board").append("<ul id='playerHand' class= table></ul>" )
+        console.log("PlayerID " + data[i].playerid)
+        console.log("Local Player ID" + localPlayer.playerid)
+        if(data[i].type != "AI"){
+            displayCards(data[i].cards)
+        }
+        else{
+            $("#AIboard").append("<ul id='aiHand' class= table></ul>" )
+            facedownCards(data[i].cards)
+        }
+    }
 })
+
+function displayCards(data){
+    //$("#board").append("<ul id='playerHand' class= table></ul>" )
+    for(var i = 0; i < data.length; i++){
+        $("#playerHand").append("<li><div class='card rank-" + data[i].value + " " + data[i].suit + "'>"
+        +      "<span class='rank'>" + data[i].value + "</span>"
+        +      "<span class='suit'>&" + data[i].suit + ";</span>"
+        +  "</div></li>")
+    }
+}
+function facedownCards(data){
+    //$("#board").append("<ul id='playerHand' class= table></ul>" )
+    for(var i = 0; i < data.length; i++){
+        $("#aiHand").append("<li><div class='card back'>*</div></li>")
+    }
+}
