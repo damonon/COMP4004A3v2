@@ -160,6 +160,21 @@ io.on('connection', function(socket){
         console.log("Max " + max)
         totalPlayers = max
     })
+
+    socket.on('AITurn',(data)=>{
+        //evalute Hand
+        //Exchange/discard hand
+        console.log(data.playerid)
+        console.log(data.type)
+        console.log(data.cards)
+        console.log(data.strategy)
+        console.log("Doing AI Moves")
+        var hand = deck.getDeck().splice(-5,5)
+        var newHand = {playerid: data.playerid, type: "AI", cards: hand, strategy:data.strategy}
+        socket.emit("nextTurn", newHand)
+        //
+    })
+
     socket.on('disconnect', ()=>{
         console.log('Client disconnect!')
         var i = allClients.indexOf(socket)
@@ -182,8 +197,17 @@ function addAI(){
 function startGame(){
     console.log(holdJson)
     //Swap order to let AI go first
-    var b = holdJson[0];
-    holdJson[0] = holdJson[1]
-    holdJson[1] = b
+    holdJson.sort(function(a, b) {
+        return a.type.localeCompare(b.type);
+    });
     io.emit('startgame', holdJson)
 }
+
+var deck2 = new Deck()
+var shuffledDeck = deck2.shuffleDeck()
+
+var testHand = deck2.getDeck().splice(-5,5)
+var strat1 = new Strategy1(testHand) 
+strat1.checkHand(results => console.log(results))
+
+//console.log("Strat1 returned: " + result.checkHold + " " + result.msg)
