@@ -207,7 +207,27 @@ var deck2 = new Deck()
 var shuffledDeck = deck2.shuffleDeck()
 
 var testHand = deck2.getDeck().splice(-5,5)
-var strat1 = new Strategy1(testHand) 
+console.log(testHand)
+/*[ Card { value: 'k', suit: 'hearts', number: '13', facedown: false },
+Card { value: '9', suit: 'hearts', number: '9', facedown: false },
+Card { value: 'q', suit: 'clubs', number: '12', facedown: false },
+Card { value: '8', suit: 'diams', number: '8', facedown: false },
+Card { value: '7', suit: 'hearts', number: '7', facedown: false } ]*/
+
+var testPair = [ {value: 'a', suit: 'hearts', number: '14', facedown: false },
+{ value: 'a', suit: 'spades', number: '14', facedown: false },
+{ value: 'k', suit: 'diams', number: '13', facedown: false },
+{ value: 'k', suit: 'hearts', number: '13', facedown: false },
+{ value: 'j', suit: 'hearts', number: '11', facedown: false }]
+var strat1 = new Strategy1(testPair) 
 strat1.checkHand(results => console.log(results))
 
 //console.log("Strat1 returned: " + result.checkHold + " " + result.msg)
+//Straight works
+//Pairs Work
+//Straight Flush works
+//Royal Flush Works
+//Three works
+//Four WOrks
+//fullhouse works
+
