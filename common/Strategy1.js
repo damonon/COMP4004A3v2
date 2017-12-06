@@ -21,7 +21,7 @@ class Strategy1{
         return this.hand
     }
 
-    setHand(){
+    setHand(hand){
         this.hand = hand
     }
 
@@ -54,18 +54,19 @@ class Strategy1{
         }
         else if(this.pair){
             var getNewHand = this.hand.slice(this.pairIndex, this.pairIndex+2)
-            return {checkHold:false, getNewHand, msg:"Pair"}
+            return {checkHold:false, msg:"Pair", getNewHand}
         }
         else if(this.twopair){
             var saveHand = this.hand
             var secondPair = this.hand.slice(this.twoIndex, this.twoIndex+2)
             var firstPair = this.hand.slice(this.oneIndex,this.oneIndex+2)
-            var getNewHand = firstPair.push(secondPair)
-            return {checkHold: false, getNewHand, msg:"Two Pair"}
+            var getNewHand = firstPair.concat(secondPair)
+            
+            return {checkHold: false, msg:"Two Pair", getNewHand}
         }
         else if(this.threeOfAKind){
             var getNewHand = this.hand.slice(this.tripleIndex, this.tripleIndex+3)
-            return {checkHold: false, getNewHand, msg:"Three of A Kind"}
+            return {checkHold: false, msg:"Three of A Kind", getNewHand}
         }
         else if(this.fourOfAKind){
             return {checkHold: true, msg:"Four of a kind"}

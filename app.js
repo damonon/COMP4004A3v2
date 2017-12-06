@@ -169,9 +169,18 @@ io.on('connection', function(socket){
         console.log(data.cards)
         console.log(data.strategy)
         console.log("Doing AI Moves")
-        var hand = deck.getDeck().splice(-5,5)
-        var newHand = {playerid: data.playerid, type: "AI", cards: hand, strategy:data.strategy}
-        socket.emit("nextTurn", newHand)
+        if(data.strategy == "strat1"){
+            console.log("Eval Strat1");
+            var strat1 = new Strategy1(data.cards)
+            strat1.checkHand(results => {
+                console.log(results)
+                // if(result.getNewHand){
+                //     var newCards = []
+                //     var numCardstoAdd = 5 - 
+                // }
+            })
+        }
+        //socket.emit("nextTurn", newHand)
         //
     })
 
@@ -220,7 +229,10 @@ var testPair = [ {value: 'a', suit: 'hearts', number: '14', facedown: false },
 { value: 'j', suit: 'hearts', number: '11', facedown: false },
 { value: 'j', suit: 'hearts', number: '11', facedown: false }]
 var strat1 = new Strategy1(testPair) 
-strat1.checkHand(results => console.log(results))
+strat1.checkHand(results => {
+    console.log(results)
+    console.log(results.getNewHand.length)
+})
 
 //console.log("Strat1 returned: " + result.checkHold + " " + result.msg)
 //Straight works
