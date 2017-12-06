@@ -216,8 +216,8 @@ Card { value: '7', suit: 'hearts', number: '7', facedown: false } ]*/
 
 var testPair = [ {value: 'a', suit: 'hearts', number: '14', facedown: false },
 { value: 'a', suit: 'spades', number: '14', facedown: false },
-{ value: 'k', suit: 'diams', number: '13', facedown: false },
-{ value: 'k', suit: 'hearts', number: '13', facedown: false },
+{ value: '10', suit: 'diams', number: '10', facedown: false },
+{ value: 'j', suit: 'hearts', number: '11', facedown: false },
 { value: 'j', suit: 'hearts', number: '11', facedown: false }]
 var strat1 = new Strategy1(testPair) 
 strat1.checkHand(results => console.log(results))

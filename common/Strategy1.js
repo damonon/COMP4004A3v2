@@ -26,7 +26,7 @@ class Strategy1{
     }
 
     checkHand(callback){
-        this.checkPair()
+        //this.checkPair()
         this.check2Pair()
         this.checkThree()
         this.checkStraight()
@@ -57,13 +57,10 @@ class Strategy1{
             return {checkHold:false, getNewHand, msg:"Pair"}
         }
         else if(this.twopair){
-            var firstPair = this.hand.slice(this.oneIndex,this.oneIndex+2)
+            var saveHand = this.hand
             var secondPair = this.hand.slice(this.twoIndex, this.twoIndex+2)
+            var firstPair = this.hand.slice(this.oneIndex,this.oneIndex+2)
             var getNewHand = firstPair.push(secondPair)
-            console.log(newHand[0].number)
-            console.log(newHand[1].number)
-            console.log(newHand[2].number)
-            console.log(newHand[3].number)
             return {checkHold: false, getNewHand, msg:"Two Pair"}
         }
         else if(this.threeOfAKind){
@@ -143,30 +140,34 @@ class Strategy1{
         }
     }
 
+    // checkPair(){
+    //     this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
+    //     for (var i=0; i<this.hand.length-1; i++) {
+    //         if (this.hand[i].number === this.hand[i+1].number) {
+    //           this.threeOfAKind = false
+    //           this.pair = true
+    //           this.twopair = false
+    //           this.pairIndex = i
+    //         }
+    //     }
+    // }
+
     check2Pair(){
         this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
         for(var i = 0; i < this.hand.length-1; i++){
             if(this.hand[i].number === this.hand[i+1].number){
                 if(this.pair){
+                    console.log("Second Pair")
                     this.pair = false
-                    this.twoIndex = i
                     this.twopair = true
+                    this.twoIndex = i
                 }
                 else{
+                    console.log("First Pair")
                     this.pair = true
                     this.oneIndex = i
+                    this.pairIndex = i
                 }
-            }
-        }
-    }
-    checkPair(){
-        this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
-        for (var i=0; i<this.hand.length-1; i++) {
-            if (this.hand[i].number === this.hand[i+1].number) {
-              this.threeOfAKind = false
-              this.pair = true
-              this.twopair = false
-              this.pairIndex = i
             }
         }
     }
