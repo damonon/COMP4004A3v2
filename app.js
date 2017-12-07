@@ -259,9 +259,8 @@ io.on('connection', function(socket){
                 strategycheck = new Strategy2(data.cards, visibleCards)
             }
 
-            strategycheck.choice(results => {
+            strategycheck.checkHand(results => {
                 console.log("I GET SOMETHING BACK")
-                console.log(results.checkHold)
                 if(results.checkHold == "swap"){
                     var newCards = []
                     var numCardsToAdd = 5 - results.getNewHand.length

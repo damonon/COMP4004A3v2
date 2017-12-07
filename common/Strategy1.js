@@ -82,7 +82,7 @@ class Strategy1 extends Strategy{
     }
 
     checkStraight(){
-        this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number));
+        this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
         if((parseInt(this.hand[0].number) + 1 == this.hand[1].number) && (parseInt(this.hand[1].number) + 1 == this.hand[2].number) && (parseInt(this.hand[2].number) + 1 == this.hand[3].number) && (parseInt(this.hand[3].number) + 1 == this.hand[4].number)){
             this.straight = true
         }
@@ -96,7 +96,7 @@ class Strategy1 extends Strategy{
     }
 
     checkFlush(){
-        this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number));
+        this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
         if ((this.hand[0].suit === this.hand[1].suit) && (this.hand[0].suit === this.hand[2].suit) && (this.hand[0].suit === this.hand[3].suit) && (this.hand[0].suit === this.hand[4].suit)){
             this.flush = true
             console.log("checkFlush")
@@ -109,7 +109,7 @@ class Strategy1 extends Strategy{
 
     checkStraightFlush(){
         
-        this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number));
+        this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
         if(this.flush){
             if((parseInt(this.hand[0].number) + 1 == this.hand[1].number) && (parseInt(this.hand[1].number) + 1 == this.hand[2].number) && (parseInt(this.hand[2].number) + 1 == this.hand[3].number) && (parseInt(this.hand[3].number) + 1 == this.hand[4].number)){
                 this.straight = false

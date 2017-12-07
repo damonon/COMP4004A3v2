@@ -79,26 +79,27 @@ $(document).ready(() => {
         console.log("Display the start game board")
         $("#gameoptions").hide()
         $("#startgameboard").show()
+
         $("#board").append("<ul id='playerHand' class= table></ul>" )
-        //console.log(data[0].playerid)
-        for(var i = 0; i < data.length; i++){
+        for(var i = 0; i < globalClients.length; i++){
             $("#board").append("<ul id='playerHand' class= table></ul>" )
-            console.log("PlayerID " + data[i].playerid)
-            if(data[i].playerid == localPlayer){
-                displayCards(data[i].cards)
+            console.log("PlayerID " + globalClients[i].playerid)
+            if(globalClients[i].playerid == localPlayer){
+                displayCards(globalClients[i].cards)
             }
             else{
+                $('#tag').append("<p>Player/AI " + globalClients[i].playerid + "</p>")
                 $("#AIboard").append("<ul id='aiHand' class= table></ul>" )
-                facedownCards(data[i].cards)
+                facedownCards(globalClients[i].cards)
             }
         }
-        if(data[0].type == "AI")
+        if(globalClients[0].type == "AI")
         {
-            console.log(data[0].strategy)
-            data[0].strategy = "strat1"
-            socket.emit('AITurn',data[0])
+            console.log(globalClients[0].strategy)
+            globalClients[0].strategy = "strat1"
+            socket.emit('AITurn',globalClients[0])
         }
-        else if(data[0].type == "Human")
+        else if(globalClients[0].type == "Human")
         {
             console.log("Starting as Human")
         }
@@ -127,6 +128,8 @@ $(document).ready(() => {
         else if((idNextPlayer.type == "Human") && idNextPlayer.playerid == localPlayer)
         {
             console.log("ITS MY TURN")
+            //User selects which card to discard
+            //HUMAN EMITS 
         }
         else{
             console.log("Waiting for Turn or Game Over")
@@ -150,5 +153,9 @@ $(document).ready(() => {
         for(var i = 0; i < data.length; i++){
             $("#aiHand").append("<li><div class='card back'>*</div></li>")
         }
+    }
+
+    function displayTable(){
+        
     }
 });
