@@ -3,13 +3,13 @@ class Card {
     this.value = value;
     this.suit = suit;
     this.number = number
-    this.facedown = false
+    this.faceup = false
   }
 
   getSuit() { return this.suit; }
   getValue() { return this.value }
   getNumber() { return this.number }
-  setFacedown(check){this.facedown = check}
+  setFaceUp(check){this.faceup = check}
 }
 
 module.exports = Card;

@@ -98,9 +98,9 @@ $(document).ready(() => {
             data[0].strategy = "strat1"
             socket.emit('AITurn',data[0])
         }
-        else
+        else if(data[0].type == "Human")
         {
-            console.log()
+            console.log("Starting as Human")
         }
     })
     
@@ -113,12 +113,15 @@ $(document).ready(() => {
                 globalClients[i] = data
                 idNextPlayer = globalClients[i+1]
                 console.log("In here " + idNextPlayer.type)
+                console.log("Should be 3" + idNextPlayer.playerid)
+                console.log(idNextPlayer.strategy)
             }
             else if(idNextPlayer == null){
                 console.log("Game is done")
             }
         }
         if(idNextPlayer.type == "AI"){
+            console.log(idNextPlayer.strategy)
             socket.emit('AITurn', idNextPlayer)
         }
         else if((idNextPlayer.type == "Human") && idNextPlayer.playerid == localPlayer)
@@ -129,7 +132,7 @@ $(document).ready(() => {
             console.log("Waiting for Turn or Game Over")
         }
 
-        console.log(globalClients[0].cards)
+        console.log(globalClients[0].hand)
         //console.log("Next Turn Player " + idNextPlayer.playerid + " " + idNextPlayer.type)
     })
 

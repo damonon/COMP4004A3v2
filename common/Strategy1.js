@@ -1,5 +1,8 @@
-class Strategy1{
+var Strategy =  require('./Strategy')
+
+class Strategy1 extends Strategy{
     constructor(hand){
+        super()
         this.hand = hand
         this.pair = false
         this.twopair = false
@@ -41,41 +44,40 @@ class Strategy1{
 
     hold(){
         if(this.straight){
-            return {checkHold: true, msg:"Straight"}
+            return {checkHold: "keep", msg:"Straight"}
         }
         else if(this.flush){
-            return {checkHold: true, msg:"Flush"}
+            return {checkHold: "keep", msg:"Flush"}
         }
         else if(this.straightFlush){
-            return {checkHold: true, msg:"Straight Flush"}
+            return {checkHold: "keep", msg:"Straight Flush"}
         }
         else if(this.royalFlush){
-            return {checkHold: true, msg:"Royal Flush"}
+            return {checkHold: "keep", msg:"Royal Flush"}
         }
         else if(this.pair){
             var getNewHand = this.hand.slice(this.pairIndex, this.pairIndex+2)
-            return {checkHold:false, msg:"Pair", getNewHand}
+            return {checkHold:"swap", msg:"Pair", getNewHand}
         }
         else if(this.twopair){
-            var saveHand = this.hand
             var secondPair = this.hand.slice(this.twoIndex, this.twoIndex+2)
             var firstPair = this.hand.slice(this.oneIndex,this.oneIndex+2)
             var getNewHand = firstPair.concat(secondPair)
             
-            return {checkHold: false, msg:"Two Pair", getNewHand}
+            return {checkHold: "swap", msg:"Two Pair", getNewHand}
         }
         else if(this.threeOfAKind){
             var getNewHand = this.hand.slice(this.tripleIndex, this.tripleIndex+3)
-            return {checkHold: false, msg:"Three of A Kind", getNewHand}
+            return {checkHold: "swap", msg:"Three of A Kind", getNewHand}
         }
         else if(this.fourOfAKind){
-            return {checkHold: true, msg:"Four of a kind"}
+            return {checkHold: "keep", msg:"Four of a kind"}
         }
         else if(this.fullhouse){
-            return {checkHold: true, msg:"FullHouse"}
+            return {checkHold: "keep", msg:"FullHouse"}
         }
         else{
-            return {checkHold: false, msg:"Shit Hand"}
+            return {checkHold: "swapAll", msg:"Shit Hand"}
         }
     }
 
@@ -141,30 +143,28 @@ class Strategy1{
         }
     }
 
-    // checkPair(){
-    //     this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
-    //     for (var i=0; i<this.hand.length-1; i++) {
-    //         if (this.hand[i].number === this.hand[i+1].number) {
-    //           this.threeOfAKind = false
-    //           this.pair = true
-    //           this.twopair = false
-    //           this.pairIndex = i
-    //         }
-    //     }
-    // }
+    checkPair(){
+        this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
+        for (var i=0; i<this.hand.length-1; i++) {
+            if (this.hand[i].number === this.hand[i+1].number) {
+              this.threeOfAKind = false
+              this.pair = true
+              this.twopair = false
+              this.pairIndex = i
+            }
+        }
+    }
 
     check2Pair(){
         this.hand.sort((a, b) => parseInt(a.number) - parseInt(b.number))
         for(var i = 0; i < this.hand.length-1; i++){
             if(this.hand[i].number === this.hand[i+1].number){
                 if(this.pair){
-                    console.log("Second Pair")
                     this.pair = false
                     this.twopair = true
                     this.twoIndex = i
                 }
                 else{
-                    console.log("First Pair")
                     this.pair = true
                     this.oneIndex = i
                     this.pairIndex = i
