@@ -1,8 +1,9 @@
 class Card {
-  constructor(value, suit, number) {
+  constructor(value, suit, number, letter) {
     this.value = value;
     this.suit = suit;
     this.number = number
+    this.letter = letter
     this.faceup = false
   }
 

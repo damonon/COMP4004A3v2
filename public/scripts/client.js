@@ -71,6 +71,21 @@ $(document).ready(() => {
         $("#fullgame").show()
     })
     
+    socket.on('winner',(data)=>{
+        const { playerId, winnerInfo } = data;
+        $("#display-winner").append(`
+            <h4>Player/AI ${playerId}</h4>
+            <h4>They had a ${winnerInfo[0].descr}</h4>
+            <div id="winner-cards"></div>
+        `)
+
+        for (let card of data) {
+            $('#winner-cards').html(`
+                <div>${card.value}, ${card.suit}</div>
+            `);
+        }
+
+    })
     //data = {playerid, type, cards}
     socket.on('startgame',(data)=>{
         globalClients = data
@@ -85,12 +100,20 @@ $(document).ready(() => {
             $("#board").append("<ul id='playerHand' class= table></ul>" )
             console.log("PlayerID " + globalClients[i].playerid)
             if(globalClients[i].playerid == localPlayer){
-                displayCards(globalClients[i].cards)
+                displayCards(globalClients[i].hand)
             }
             else{
-                $('#tag').append("<p>Player/AI " + globalClients[i].playerid + "</p>")
-                $("#AIboard").append("<ul id='aiHand' class= table></ul>" )
-                facedownCards(globalClients[i].cards)
+                $('#tag').append(`
+                    <br><p>Player/AI ${globalClients[i].playerid}</p>
+                    <ul id='${globalClients[i].playerid}' class= table></ul>
+                    <P>DONE</P>
+                `)
+
+                for (let card of globalClients[i].hand) {
+                    $('#'+globalClients[i].playerid).append(`
+                       <li><div class='card back'>*</div></li>
+                    `)
+                }
             }
         }
         if(globalClients[0].type == "AI")
@@ -107,9 +130,11 @@ $(document).ready(() => {
     
     socket.on('nextTurn', (data)=>{
         console.log("hell this is new")
+        $("#board").empty()
+        $('#tag').empty()
         var idNextPlayer = null;
-        for(var i = 0; i < globalClients.length; i++){
-            if((data.playerid == globalClients[i].playerid))
+        for(var i = 0; i < globalClients.length-1; i++){
+            if((data.playerid === globalClients[i].playerid))
             {
                 globalClients[i] = data
                 idNextPlayer = globalClients[i+1]
@@ -117,22 +142,80 @@ $(document).ready(() => {
                 console.log("Should be 3" + idNextPlayer.playerid)
                 console.log(idNextPlayer.strategy)
             }
-            else if(idNextPlayer == null){
-                console.log("Game is done")
+        }
+
+        if(idNextPlayer !== null){
+            if(idNextPlayer.type == "AI"){
+                console.log(idNextPlayer.strategy)
+                socket.emit('AITurn', idNextPlayer)
             }
-        }
-        if(idNextPlayer.type == "AI"){
-            console.log(idNextPlayer.strategy)
-            socket.emit('AITurn', idNextPlayer)
-        }
-        else if((idNextPlayer.type == "Human") && idNextPlayer.playerid == localPlayer)
-        {
-            console.log("ITS MY TURN")
-            //User selects which card to discard
-            //HUMAN EMITS 
+            else if((idNextPlayer.type == "Human") && idNextPlayer.playerid == localPlayer)
+            {
+                console.log("ITS MY TURN")
+                console.log(globalClients[0])
+                console.log(globalClients[1])
+                console.log(globalClients[2])
+                $("#board").append("<ul id='playerHand' class= table></ul>" )
+                for(var k = 0; k < globalClients.length; k++){
+                    console.log("PlayerID " + globalClients[k].playerid)
+                    if(globalClients[k].playerid == localPlayer){
+                        for(let card of globalClients[k].hand){
+                            $("#playerHand").append(`<li><label class='card rank-${card.value} ${card.suit}'>
+                                                            <span class='rank'> ${card.value}</span>
+                                                            <span class='suit'>&${card.suit};</span>
+                                                            <input type="checkbox" name='${globalClients[k]}' value='${card.value}-${card.suit}'/>
+                                                            </label>
+                                                        </li>
+                        `   )
+                        }
+                        $("#board").append(`<button type="submit" id="end-turn" value="End-Turn">End Turn</button>`)
+                    }
+                    else{
+                        $('#tag').append(`
+                            <br><p>Player/AI ${globalClients[k].playerid}</p>
+                            <ul id='${globalClients[k].playerid}' class= table></ul>
+                            <P>DONE</P>
+                        `)
+                        console.log(globalClients[k].hand)
+                        for (let card of globalClients[k].hand) {
+                            if(card.faceup == true)
+                            {
+                                console.log("Im in here")
+                                $('#'+globalClients[k].playerid).append(`
+                                    <li><div class='card rank-${card.value} ${card.suit}'>
+                                            <span class='rank'> ${card.value}</span>
+                                            <span class='suit'>&${card.suit};</span>
+                                        </div>
+                                    </li>
+                                `)
+                            }
+                            else{
+                                console.log("This is Fucked")
+                                $('#'+globalClients[k].playerid).append(`
+                                    <li><div class='card back'>*</div></li>
+                                `)
+                            }
+                        }
+                    }
+                }
+                $('#end-turn').click(()=>{
+                    console.log("Hello World")
+                    var discardElements = []
+                    let checkedBoxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                    for (let box of checkedBoxes) {
+                        console.log(box.value);
+                        discardElements.push(box.value)
+                    }
+                    var data = {playerid:idNextPlayer.playerid, type:idNextPlayer.type, hand:idNextPlayer.hand, visible:idNextPlayer.visible, strategy:idNextPlayer.strategy, discard:discardElements}
+    
+                    socket.emit('playerTurn', data)
+                })
+    
+            }
         }
         else{
             console.log("Waiting for Turn or Game Over")
+            socket.emit("game-over")
         }
 
         console.log(globalClients[0].hand)
@@ -153,9 +236,5 @@ $(document).ready(() => {
         for(var i = 0; i < data.length; i++){
             $("#aiHand").append("<li><div class='card back'>*</div></li>")
         }
-    }
-
-    function displayTable(){
-        
     }
 });

@@ -2,6 +2,7 @@ var express = require('express')
 var app = express()
 var favicon = require('serve-favicon')
 var path = require('path');
+var handsolver = require('pokersolver').Hand
 
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
@@ -24,9 +25,9 @@ var numHumPlayers = 0;
 var totalPlayers = 0;
 var count = 0;
 var visibleCards = []
+var finalHands = []
 var deck = new Deck()
 var shuffledDeck = deck.shuffleDeck()
-console.log(shuffledDeck)
 
 
 //Middleware
@@ -49,7 +50,7 @@ io.on('connection', function(socket){
         var newPlayerID = availableSlots.pop()
         var hand = deck.getDeck().splice(-5,5)
         var human = new Player(newPlayerID, "Player " + newPlayerID, "none", hand)
-        var test = {playerid: newPlayerID, type: "Human", cards: hand, strategy: "none"}
+        var test = {playerid: newPlayerID, type: "Human", hand: hand, strategy: "none"}
         holdJson.push(test)
         count++
         console.log(human)
@@ -63,7 +64,7 @@ io.on('connection', function(socket){
         var newPlayerID = availableSlots.pop()
         var hand = deck.getDeck().splice(-5,5)
         var human = new Player(newPlayerID, "Player " + newPlayerID, "none", hand)
-        var test = {playerid: newPlayerID, type: "Human", cards: hand, strategy: "none"}
+        var test = {playerid: newPlayerID, type: "Human", hand: hand, strategy: "none"}
         holdJson.push(test)
         count++
         console.log(human)
@@ -92,7 +93,7 @@ io.on('connection', function(socket){
             var hand = deck.getDeck().splice(-5,5)
             count = count + 1
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
-            var test = {playerid: newPlayerID, type: "AI", cards: hand, strategy:data.ai1strat}
+            var test = {playerid: newPlayerID, type: "AI", hand: hand, strategy:data.ai1strat}
             
             holdJson.push(test)
             clients.push(ai)
@@ -108,7 +109,7 @@ io.on('connection', function(socket){
             count = count + 2
             var hand = deck.getDeck().splice(-5,5)
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
-            var test = {playerid: newPlayerID, type: "AI", cards: hand , strategy:data.ai1strat}
+            var test = {playerid: newPlayerID, type: "AI", hand: hand , strategy:data.ai1strat}
             holdJson.push(test)
             clients.push(ai)
             console.log(ai)
@@ -116,7 +117,7 @@ io.on('connection', function(socket){
             var hand2 = deck.getDeck().splice(-5,5)
             var newPlayerID2 = availableSlots.pop()
             var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat, hand2)
-            var test2 = {playerid: newPlayerID2, type: "AI", cards: hand2, strategy:data.ai2strat}
+            var test2 = {playerid: newPlayerID2, type: "AI", hand: hand2, strategy:data.ai2strat}
             holdJson.push(test2)
 
             console.log(ai2)
@@ -131,7 +132,7 @@ io.on('connection', function(socket){
             count = count + 3
             var hand = deck.getDeck().splice(-5,5)
             var ai = new Player(newPlayerID, "AI " + newPlayerID, data.ai1strat, hand)
-            var test = {playerid: newPlayerID, type: "AI", cards: hand, strategy:data.ai1strat}
+            var test = {playerid: newPlayerID, type: "AI", hand: hand, strategy:data.ai1strat}
             holdJson.push(test)
             console.log(ai)
             clients.push(ai)
@@ -139,7 +140,7 @@ io.on('connection', function(socket){
             var newPlayerID2 = availableSlots.pop()
             var hand2 = deck.getDeck().splice(-5,5)
             var ai2 = new Player(newPlayerID2, "AI " + newPlayerID2, data.ai2strat, hand2)
-            var test2 = {playerid: newPlayerID2, type: "AI", cards: hand2, strategy:data.ai2strat}
+            var test2 = {playerid: newPlayerID2, type: "AI", hand: hand2, strategy:data.ai2strat}
             holdJson.push(test2)
             console.log(ai2)
             clients.push(ai2)
@@ -147,7 +148,7 @@ io.on('connection', function(socket){
             var newPlayerID3 = availableSlots.pop()
             var hand3 = deck.getDeck().splice(-5,5)
             var ai3 = new Player(newPlayerID3, "AI " + newPlayerID3, data.ai3strat, hand3)
-            var test3 = {playerid: newPlayerID3, type: "AI", cards: hand3, strategy:data.ai3strat}
+            var test3 = {playerid: newPlayerID3, type: "AI", hand: hand3, strategy:data.ai3strat}
             holdJson.push(test3)
             console.log(ai3)
             clients.push(ai3)
@@ -168,7 +169,7 @@ io.on('connection', function(socket){
         //Exchange/discard hand
         var playerid = data.playerid
         var type = data.type
-        var currentHand = data.cards
+        var currentHand = data.hand
         var strategy = data.strategy
         console.log("Doing AI Moves")
         console.log("Playerid AI " + playerid)
@@ -181,7 +182,7 @@ io.on('connection', function(socket){
         console.log("Player strategy " + strategy)
         if(data.strategy == "strat1"){
             console.log("Eval Strat1");
-            var strat1 = new Strategy1(data.cards)
+            var strat1 = new Strategy1(data.hand)
             strat1.checkHand(results => {
                 console.log(results.checkHold)
                 if(results.checkHold == "swap"){
@@ -199,6 +200,7 @@ io.on('connection', function(socket){
                         var newHand = results.getNewHand.concat(newCards)
                         console.log("New Hand" + newHand)
                         var data = {playerid: playerid, type: type, hand: newHand, visible: newCards, strategy: strategy}
+                        finalHands.push(data)
                         socket.emit("nextTurn", data)
 
                     }
@@ -213,6 +215,7 @@ io.on('connection', function(socket){
                         var newHand = results.getNewHand.concat(newCards)
                         console.log("New Hand" + newHand)
                         var data = {playerid: playerid, type: type, hand: newHand, visible: newCards, strategy: strategy}
+                        finalHands.push(data)
                         socket.emit("nextTurn", data)
                     }
                     else if(numCardsToAdd === 1){
@@ -221,6 +224,7 @@ io.on('connection', function(socket){
                         visibleCards.push(newCards)
                         var newHand = results.getNewHand.concat(newCards)
                         var data = {playerid: playerid, type: type, hand: newHand, visible: newCards, strategy: strategy}
+                        finalHands.push(data)
                         socket.emit("nextTurn", data)
                     }
                 }
@@ -233,11 +237,13 @@ io.on('connection', function(socket){
                     console.log(newCards)
                     console.log(playerid)
                     var data = {playerid: playerid, type: type, hand: newCards, visible: newCards, strategy: strategy}
+                    finalHands.push(data)
                     socket.emit("nextTurn", data)
                 }
                 else{
                     console.log("HOLDING EVERYTHING")
                     var data = {playerid: playerid, type: type, hand: currentHand, strategy: strategy}
+                    finalHands.push(data)
                     socket.emit("nextTurn", data)
                 }
             })
@@ -245,18 +251,13 @@ io.on('connection', function(socket){
         else if(data.strategy == "strat2"){
             console.log("Do Stuff Strat2")
             console.log(visibleCards)
-            console.log(data.cards[0])
-            console.log(data.cards[1])
-            console.log(data.cards[2])
-            console.log(data.cards[3])
-            console.log(data.cards[4])
 
             var strategycheck = null
             if(visibleCards.length === 0){
                 strategycheck = new Strategy2(hand)
             }
             else{
-                strategycheck = new Strategy2(data.cards, visibleCards)
+                strategycheck = new Strategy2(data.hand, visibleCards)
             }
 
             strategycheck.checkHand(results => {
@@ -276,6 +277,7 @@ io.on('connection', function(socket){
                         var newHand = results.getNewHand.concat(newCards)
                         console.log("New Hand" + newHand)
                         var data = {playerid: playerid, type: type, hand: newHand, visible: newCards, strategy: strategy}
+                        finalHands.push(data)
                         socket.emit("nextTurn", data)
 
                     }
@@ -290,6 +292,7 @@ io.on('connection', function(socket){
                         var newHand = results.getNewHand.concat(newCards)
                         console.log("New Hand" + newHand)
                         var data = {playerid: playerid, type: type, hand: newHand, visible: newCards, strategy: strategy}
+                        finalHands.push(data)
                         socket.emit("nextTurn", data)
                     }
                     else if(numCardsToAdd === 1){
@@ -298,6 +301,7 @@ io.on('connection', function(socket){
                         visibleCards.push(newCards)
                         var newHand = results.getNewHand.concat(newCards)
                         var data = {playerid: playerid, type: type, hand: newHand, visible: newCards, strategy: strategy}
+                        finalHands.push(data)
                         socket.emit("nextTurn", data)
                     }
                 }
@@ -310,16 +314,202 @@ io.on('connection', function(socket){
                     console.log(newCards)
                     console.log(playerid)
                     var data = {playerid: playerid, type: type, hand: newCards, visible: newCards, strategy: strategy}
+                    finalHands.push(data)
                     socket.emit("nextTurn", data)
                 }
                 else{
                     console.log("HOLDING EVERYTHING")
                     var data = {playerid: playerid, type: type, hand: currentHand, strategy: strategy}
+                    finalHands.push(data)
                     socket.emit("nextTurn", data)
                 }
             })
             
         }
+    })
+
+    socket.on('playerTurn',(data)=>{
+        console.log(data);
+        var currentHand = data.hand
+        var newHand = []
+        if(data.discard.length === 0){
+            console.log("Didnt Discard")
+            finalHands.push(data)
+            socket.emit("nextTurn", data)
+        }
+        else if(data.discard.length === 1){
+            var e1 = data.discard[0].split("-");
+            var e1value = e1[0]
+            var e1suit = e1[1]
+            console.log(e1value + " " + e1suit)
+            for(var i = 0; i < data.hand.length;i++){
+                if((e1value !== data.hand[i].value) && (e1suit !== data.hand[i].suit)){
+                    newHand.push(data.hand[i])
+                }
+            }
+            var card = deck.pop()
+            card.setFaceUp(true)
+            newHand.push(card)
+            var update = {playerid: data.playerid, type: data.type, hand: newHand, strategy:data.strategy}
+            finalHands.push(update)
+            socket.emit("nextTurn", update)
+        }
+        else if(data.discard.length === 2){
+            var e1 = data.discard[0].split("-");
+            var e1value = e1[0]
+            var e1suit = e1[1]
+
+            var e2 = data.discard[1].split("-");
+            var e2value = e2[0]
+            var e2suit = e2[1]
+            console.log(e1value + " " + e1suit)
+            for(var i = 0; i < data.hand.length;i++){
+                if((e1value === data.hand[i].value) && (e1suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+                if((e2value === data.hand[i].value) && (e2suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+
+            }
+            var card = deck.pop()
+            var card2 = deck.pop()
+            card.setFaceUp(true)
+            card2.setFaceUp(true)
+            currentHand.push(card2)
+            currentHand.push(card)
+            for(let newH of currentHand){
+                console.log(newH)
+            }
+            var update = {playerid: data.playerid, type: data.type, hand: currentHand, strategy:data.strategy}
+            finalHands.push(update)
+            socket.emit("nextTurn", update)
+        }
+        else if(data.discard.length === 3){
+            var e1 = data.discard[0].split("-");
+            var e1value = e1[0]
+            var e1suit = e1[1]
+
+            var e2 = data.discard[1].split("-");
+            var e2value = e2[0]
+            var e2suit = e2[1]
+
+            var e3 = data.discard[2].split("-");
+            var e3value = e3[0]
+            var e3suit = e3[1]
+            console.log(e1value + " " + e1suit)
+            for(var i = 0; i < data.hand.length;i++){
+                if((e1value === data.hand[i].value) && (e1suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+                if((e2value === data.hand[i].value) && (e2suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+                if((e3value === data.hand[i].value) && (e3suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+
+            }
+            var card = deck.pop()
+            var card2 = deck.pop()
+            var card3 = deck.pop()
+
+            card.setFaceUp(true)
+            card2.setFaceUp(true)
+            card3.setFaceUp(true)
+            currentHand.push(card2)
+            currentHand.push(card)
+            currentHand.push(card3)
+            for(let newH of currentHand){
+                console.log(newH)
+            }
+            var update = {playerid: data.playerid, type: data.type, hand: currentHand, strategy:data.strategy}
+            finalHands.push(update)
+            socket.emit("nextTurn", update)
+        }
+        else if(data.discard.length === 4)
+        {
+            var e1 = data.discard[0].split("-");
+            var e1value = e1[0]
+            var e1suit = e1[1]
+
+            var e2 = data.discard[1].split("-");
+            var e2value = e2[0]
+            var e2suit = e2[1]
+
+            var e3 = data.discard[2].split("-");
+            var e3value = e3[0]
+            var e3suit = e3[1]
+
+            var e4 = data.discard[3].split("-");
+            var e4value = e4[0]
+            var e4suit = e4[1]
+            
+            for(var i = 0; i < data.hand.length;i++){
+                if((e1value === data.hand[i].value) && (e1suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+                if((e2value === data.hand[i].value) && (e2suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+                if((e3value === data.hand[i].value) && (e3suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+                if((e4value === data.hand[i].value) && (e4suit === data.hand[i].suit)){
+                    currentHand.splice(i,1)
+                }
+            }
+            var card = deck.pop()
+            var card2 = deck.pop()
+            var card3 = deck.pop()
+            var card4 = deck.pop()
+
+            card.setFaceUp(true)
+            card2.setFaceUp(true)
+            card3.setFaceUp(true)
+            card4.setFaceUp(true)
+            currentHand.push(card2)
+            currentHand.push(card)
+            currentHand.push(card3)
+            currentHand.push(card4)
+
+            for(let newH of currentHand){
+                console.log(newH)
+            }
+            var update = {playerid: data.playerid, type: data.type, hand: currentHand, strategy:data.strategy}
+            finalHands.push(update)
+            socket.emit("nextTurn", update)
+        }
+        else if(data.discard.length === 5){
+            var newHand = [deck.pop(), deck.pop(), deck.pop(), deck.pop(),deck.pop()]
+            var update = {playerid: data.playerid, type: data.type, hand: newHand, strategy:data.strategy}
+            finalHands.push(update)
+            socket.emit("nextTurn", update)
+        }
+    })
+
+    socket.on('game-over',()=>{
+        console.log("GAME FINSIHED DETERMINE WINNER")
+        var results = []
+        for(var i = 0; i < finalHands.length; i++){
+            var hand = finalHands[i].hand
+            var format = []
+
+            for(card of hand){ 
+                format.push(`${card.value}${card.letter}`)
+            }
+
+            var result = handsolver.solve(format)
+            result.id = finalHands[i].playerid
+            results.push(result)
+        }
+
+        var winnerInfo = handsolver.winners([...results])
+        var playerId = winnerInfo[0].id
+        console.log(winnerInfo[0].id)
+        console.log(playerId)
+    
+        io.emit("winner", {winnerInfo, playerId, results})
     })
 
     socket.on('disconnect', ()=>{
@@ -342,35 +532,3 @@ function startGame(){
     });
     io.emit('startgame', holdJson)
 }
-
-var deck2 = new Deck()
-var shuffledDeck = deck2.shuffleDeck()
-
-var testHand = deck2.getDeck().splice(-5,5)
-console.log(testHand)
-/*[ Card { value: 'k', suit: 'hearts', number: '13', facedown: false },
-Card { value: '9', suit: 'hearts', number: '9', facedown: false },
-Card { value: 'q', suit: 'clubs', number: '12', facedown: false },
-Card { value: '8', suit: 'diams', number: '8', facedown: false },
-Card { value: '7', suit: 'hearts', number: '7', facedown: false } ]*/
-
-var testPair = [ {value: 'a', suit: 'hearts', number: '14', facedown: false },
-{ value: 'a', suit: 'spades', number: '14', facedown: false },
-{ value: '10', suit: 'diams', number: '10', facedown: false },
-{ value: 'j', suit: 'hearts', number: '11', facedown: false },
-{ value: 'q', suit: 'hearts', number: '12', facedown: false }]
-var strat1 = new Strategy1(testPair) 
-strat1.checkHand(results => {
-    console.log(results)
-    console.log(results.getNewHand.length)
-})
-
-//console.log("Strat1 returned: " + result.checkHold + " " + result.msg)
-//Straight works
-//Pairs Work
-//Straight Flush works
-//Royal Flush Works
-//Three works
-//Four WOrks
-//fullhouse works
-
